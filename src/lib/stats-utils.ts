@@ -44,6 +44,33 @@ function calcDelta(
   return { delta, pct: Math.round(rawPct * 100) };
 }
 
+/**
+ * Delta calculation for save percentage.
+ * Uses an absolute threshold (±0.010 = 1 percentage point) rather than a
+ * relative one, because SV% values cluster in a narrow band (.895–.930) where
+ * a 10% relative change is essentially impossible.
+ * The returned `pct` is the absolute difference in percentage points
+ * (e.g. +1.5 means the goalie is saving 1.5 pp more than their trailing avg).
+ */
+const SV_PCT_THRESHOLD = 0.010; // 1 percentage point
+
+function calcSavePctDelta(
+  current: number,
+  trailing: number
+): { delta: PerformanceDelta; pct: number } {
+  if (trailing === 0) return { delta: "neutral", pct: 0 };
+  const diff = current - trailing; // positive = better
+  const delta: PerformanceDelta =
+    diff > SV_PCT_THRESHOLD
+      ? "over"
+      : diff < -SV_PCT_THRESHOLD
+        ? "under"
+        : "neutral";
+  // Display as percentage points with one decimal (e.g. +1.5, -0.8)
+  const pct = Math.round(diff * 1000) / 10;
+  return { delta, pct };
+}
+
 export function buildSkaterRow(
   player: RosterPlayer,
   landing: PlayerLandingResponse
@@ -139,7 +166,7 @@ export function buildGoalieRow(
   const { delta, pct } =
     priorGoalieSeasons.length === 0
       ? { delta: "rookie" as PerformanceDelta, pct: 0 }
-      : calcDelta(gaa, trailingAvgGaa, true); // lower GAA = better
+      : calcSavePctDelta(savePct, trailingAvgSavePct);
 
   return {
     id: player.id,

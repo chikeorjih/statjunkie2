@@ -11,6 +11,7 @@ import { DataTable } from "@/components/PlayerTable/data-table";
 import { skaterColumns } from "@/components/PlayerTable/columns-skaters";
 import { goalieColumns } from "@/components/PlayerTable/columns-goalies";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { PlayerModal } from "@/components/PlayerModal";
 
 type PositionFilterType = "all" | "forwards" | "defense" | "goalies";
 
@@ -30,6 +31,7 @@ export function DashboardClient({ teamList }: DashboardClientProps) {
   const [goalieRows, setGoalieRows] = useState<GoalieRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSkater, setSelectedSkater] = useState<SkaterRow | null>(null);
 
   const loadTeamData = useCallback(async (teamAbbrev: string) => {
     setLoading(true);
@@ -91,6 +93,11 @@ export function DashboardClient({ teamList }: DashboardClientProps) {
 
   return (
     <TooltipProvider>
+      <PlayerModal
+        player={selectedSkater}
+        allSkaters={skaterRows}
+        onClose={() => setSelectedSkater(null)}
+      />
       <div className="space-y-6">
         {/* 2-column team header */}
         <TeamStatsHeader
@@ -131,6 +138,7 @@ export function DashboardClient({ teamList }: DashboardClientProps) {
               data={visibleSkaters}
               isLoading={loading}
               skeletonCols={9}
+              onRowClick={setSelectedSkater}
             />
             {positionFilter === "all" && !loading && goalieRows.length > 0 && (
               <>

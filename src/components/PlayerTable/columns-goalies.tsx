@@ -110,16 +110,16 @@ export const goalieColumns: ColumnDef<GoalieRow>[] = [
     ),
   },
   {
-    accessorKey: "trailingAvgGaa",
-    header: "3yr GAA",
+    accessorKey: "trailingAvgSavePct",
+    header: "3yr SV%",
     size: 88,
     meta: { numeric: true },
     cell: ({ row }) => {
-      const avg = row.original.trailingAvgGaa;
+      const avg = row.original.trailingAvgSavePct;
       const count = row.original.trailingSeasonCount;
       return (
         <span className="tabular-nums text-text-secondary">
-          {count === 0 ? "—" : `${fmt2(avg)} (${count}yr)`}
+          {count === 0 ? "—" : `${fmt3(avg)} (${count}yr)`}
         </span>
       );
     },
@@ -131,11 +131,11 @@ export const goalieColumns: ColumnDef<GoalieRow>[] = [
     size: 100,
     meta: { centered: true },
     cell: ({ row }) => {
-      const { performanceDelta, performancePct, trailingAvgGaa, trailingSeasonCount } =
+      const { performanceDelta, performancePct, trailingAvgSavePct, trailingSeasonCount } =
         row.original;
       const trailingLabel =
         trailingSeasonCount > 0
-          ? `${fmt2(trailingAvgGaa)} GAA (${trailingSeasonCount}yr avg)`
+          ? `${fmt3(trailingAvgSavePct)} SV% avg (${trailingSeasonCount}yr) · ±1.0 pp threshold`
           : undefined;
       return (
         <PerformanceIndicator

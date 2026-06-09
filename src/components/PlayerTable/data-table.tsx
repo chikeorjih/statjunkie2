@@ -26,6 +26,7 @@ interface DataTableProps<TData> {
   data: TData[];
   isLoading?: boolean;
   skeletonCols?: number;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData>({
@@ -33,6 +34,7 @@ export function DataTable<TData>({
   data,
   isLoading,
   skeletonCols,
+  onRowClick,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -108,12 +110,13 @@ export function DataTable<TData>({
             table.getRowModel().rows.map((row, i) => (
               <TableRow
                 key={row.id}
-                className="border-white/8 h-11 transition-colors"
+                className={`border-white/8 h-11 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
                 style={{
                   backgroundColor: i % 2 === 0 ? "transparent" : "rgba(28,28,30,0.35)",
                 }}
+                onClick={() => onRowClick?.(row.original)}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "rgba(28,28,30,0.4)")
+                  (e.currentTarget.style.backgroundColor = "rgba(28,28,30,0.55)")
                 }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.backgroundColor =
